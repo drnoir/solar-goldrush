@@ -1,19 +1,26 @@
-# Planet Miners!
-### by Chris Godber
-A resource collection webgame based on CubeGen
-# Game Aim
-* Collect SpaceMana from planets in procudrally generated solar systems
-* find portals and travel to distant galaxies 
-* 
-### Current Version Plaent Miners! - (1.0) / CubeGen (2.0)
+# Solar Goldrush
+### A Space Sim game by Chris Godber 
+(GH - DrNoir)
+A resource collection 3d webgame based on CubeGen
+
+### Game Aim
+* Collect the precious mineral SpaceMana from planets in procudrally generated solar systems
+* Find portals and travel to distant galaxies
+* watch out for the other SpaceMercs
+* Trade spaceMana with others in the markets
+
+### Current Version Solar Goldrush! - (1.0) / CubeGen (2.0)
 Procedurally generated resource collection game
 
-Collect Mana in space, find portals, make money. 
+Collect Mana, find portals, make money. 
 
-Controls: Keyboard: WASD 
+### Controls:
+
+#### Computer:
+Keyboard: WASD 
 Movement Mouse: Click and drag to rotate 
 Space: Fire
 
-Play on Itch.io - 
+#### Mobile:
 
-## Assets
+### Assets
