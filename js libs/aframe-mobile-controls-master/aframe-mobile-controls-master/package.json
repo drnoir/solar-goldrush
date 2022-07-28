@@ -1,0 +1,27 @@
+{
+  "name": "aframe-mobile-controls",
+  "version": "0.0.5",
+  "description": "Components for AFrame",
+  "main": "index.js",
+  "scripts": {
+    "test": "console.log('loading aframe-mobile-controls...');"
+  },
+  "author": "Fasility, LLC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ctrl-Alt-Zen/aframe-mobile-controls.git"
+  },
+  "keywords": [
+    "aframe",
+    "mobile",
+    "controls",
+    "vr",
+    "fasility",
+    "components"
+  ],
+  "bugs": {
+    "url": "https://github.com/Ctrl-Alt-Zen/aframe-mobile-controls/issues"
+  },
+  "homepage": "https://github.com/Ctrl-Alt-Zen/aframe-mobile-controls#readme"
+}
