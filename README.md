@@ -1,10 +1,18 @@
-# Solar Goldrush 
+# Solar Goldrush
 ### A Space Sim game by Alien Rabbit
 (Programmer - DrNoir)
 
 A resource collection 3d webgame based on the game CubeGen
 
-### Directory 
+### Version Changes / Source Control notes for devs
+* Branch off from dev for changes and merge request when changes done
+* Work in Dev folder on any change
+* Root is for github pages - https://drnoir.github.io/solar-goldrush/ (Don't share outside the team)
+* prod - when dev is stable we will just paste the entire dev folder into this
+* make sure to make version control notes for major changes in README.md in dev
+
+
+### Directory
 * dev - for prototyping code
 * prod - for production rollouts
 * Root - for GH pages / testing at
@@ -28,8 +36,4 @@ Space: Fire
 
 #### Mobile:
 
-
 ### Assets
-
-
-### Version Changes
