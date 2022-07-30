@@ -1,11 +1,11 @@
 // script for generating buildings / game logic etc
-
 // global game vars
-const starsNum = getRandomInt(1000,1200);
+const starsNum = getRandomInt(1000, 1200);
 let gamestarted = false;
 let firstDamage = false;
 const totalTime = starsNum * 3;
 let health = 10;
+let spaceMana = 0;
 
 window.onload = function () {
     // const playBtn = document.getElementById("playBtn");
@@ -32,7 +32,7 @@ AFRAME.registerComponent('player', {
                 document.getElementById('collide').volume = 0.3;
             }
 
-            if (e.detail.body.el.className === "winbox") {
+            if (e.detail.body.el.className === "star") {
                 console.log("winbox");
                 const box = document.querySelector('a-box');
                 let winboxRemove = e.detail.body.el;
@@ -41,21 +41,29 @@ AFRAME.registerComponent('player', {
                 decrementScore();
             }
 
-            if (e.detail.body.el.className === "negbox") {
+            // debris?
+            if (e.detail.body.el.className === "star") {
                 console.log("negbox");
                 const box = document.querySelector('a-box');
                 document.getElementById('damage').play();
                 health--;
             }
 
-
-            if (e.detail.body.el.className === "planetAura") {
+            // change to aura later but for now test planet collision
+            if (e.detail.body.el.className === "aura") {
                 console.log("planet Aura");
                 const planet = document.querySelector('a-sphere');
                 document.getElementById('collect').play();
                 spaceMana++;
             }
 
+            // change to aura later but for now test planet collision
+            if (e.detail.body.el.className === "planet") {
+                console.log("planet Aura");
+                const planet = document.querySelector('a-sphere');
+                document.getElementById('collect').play();
+                health = -10;
+            }
         });
     }
 })
@@ -63,8 +71,7 @@ AFRAME.registerComponent('player', {
 
 AFRAME.registerComponent('draw-canvas', {
 
-    init: function()
-    {
+    init: function () {
         this.canvas = document.querySelector("#mycanvas");
 
         this.context = this.canvas.getContext('2d');
@@ -75,23 +82,22 @@ AFRAME.registerComponent('draw-canvas', {
         this.dy = 3;
     },
 
-    tick: function(t)
-    {
+    tick: function (t) {
         this.x += this.dx;
         this.y += this.dy;
 
-        if (this.x > 512-50 || this.x < 0)
+        if (this.x > 512 - 50 || this.x < 0)
             this.dx *= -1;
-        if (this.y > 512-50 || this.y < 0)
+        if (this.y > 512 - 50 || this.y < 0)
             this.dy *= -1;
 
         // clear canvas
         this.context.fillStyle = "#8888FF";
-        this.context.fillRect(0,0, 512,512);
+        this.context.fillRect(0, 0, 512, 512);
 
         // draw rectangle
         this.context.fillStyle = "#FF0000";
-        this.context.fillRect( this.x, this.y, 50, 50 );
+        this.context.fillRect(this.x, this.y, 50, 50);
 
         // thanks to https://github.com/aframevr/aframe/issues/3936 for the update fix
         let material = this.el.getObject3D('mesh').material;
@@ -134,7 +140,6 @@ function beginGame() {
     document.getElementById('warp').play();
     document.getElementById('warp').volume = 0.4;
 
-    const timeLeft = document.getElementById('timeLeft');
     const totalTimeElm = document.getElementById('totalTime');
     const cubesCreated = document.getElementById('cubesCreated');
     const cubesLeft = document.getElementById('cubesLeft');
@@ -144,8 +149,8 @@ function beginGame() {
 
     createStars(starsNum);
     totalTimeElm.innerHTML = totalTime.toString();
-    // healthLeft.innerHTML = health.toString()
-    createPlanets(starsNum/90);
+    healthLeft.innerHTML = health.toString()
+    createPlanets(starsNum / 90);
     createPortals(portalNum);
 
     document.getElementById('myAudio').play();
@@ -157,13 +162,12 @@ function beginGame() {
 }
 
 function restart() {
-
+    // change this to main menu or something
     location.reload();
 }
 
 function decrementScore() {
     amountofWinBoxes--;
-
     //check for win condition
     if (amountofWinBoxes === 0) {
         document.getElementById("Win").style.visibility = "visible";
@@ -212,7 +216,7 @@ function getRandomColor(colors) {
 
 function createPlanets(planetsNum) {
     let i;
-    for (i = 0; i <planetsNum ; i++) {
+    for (i = 0; i < planetsNum; i++) {
         // function to create planets with random position
         let planet = document.createElement('a-sphere');
         let aura = document.createElement('a-sphere');
@@ -223,10 +227,11 @@ function createPlanets(planetsNum) {
         planet.setAttribute('position', {x: posx, y: posy, z: posz});
         planet.object3D.scale.set(scale, scale, scale);
         planet.setAttribute('planet', '');
+        // add random texture for planets - TO DO
         planet.setAttribute('material', 'src', 'energy.jpg');
         planet.setAttribute('material', 'color', 'red');
         planet.setAttribute('class', 'planet');
-        let colorArr = ['#880000', '#274E13', '#3D85C6','#7F6000'];
+        let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
         let color = getRandomColor(colorArr);
         planet.setAttribute('material', 'color', color);
         document.querySelector('a-scene').appendChild(planet);
@@ -243,7 +248,7 @@ function createPlanets(planetsNum) {
 // aura.object3D.scale.set(auraScale, auraScale, auraScale);
 // aura.setAttribute('planetAura', '');
 
-function createPortals(portalsNum){
+function createPortals(portalsNum) {
     let i;
     for (i = 0; i < 3; i++) {
         let portal = document.createElement('a-sky');
@@ -252,11 +257,11 @@ function createPortals(portalsNum){
         let posyP = getRandomInt(10000, 20000);
         let scaleP = getRandomInt(500, 500);
 
-        portal.setAttribute('position', {x:posxP , y: posyP, z: poszP});
+        portal.setAttribute('position', {x: posxP, y: posyP, z: poszP});
         portal.object3D.scale.set(scaleP, scaleP, scaleP);
         let colorArr = ['white', 'orange', 'red'];
         let color = getRandomColor(colorArr);
-        portal.setAttribute('material', 'src',  color);
+        portal.setAttribute('material', 'src', color);
         portal.setAttribute('name', 'portal');
         portal.setAttribute('class', 'portal');
         portal.setAttribute('material', 'src', '#spaceBG_v');
@@ -264,23 +269,23 @@ function createPortals(portalsNum){
     }
 }
 
-    function createStars(amount) {
-        let starNum = amount;
-        let i;
-        for (i = 0; i < starNum; i++) {
-            let star = document.createElement('a-sphere');
-            let posx = getRandomInt(-10000, 80000);
-            let posz = getRandomInt(0,3000);
-            let posy = getRandomInt(0,3000);
-            let scale = getRandomInt(5,8);
-            star.setAttribute('position', {x: posx, y: posy, z: posz});
-            star.object3D.scale.set(scale, scale, scale);
-            star.setAttribute('gamebox', '');
-            let colorArr = ['#880000', '#274E13', '#3D85C6','#7F6000'];
-            let color = getRandomColor(colorArr);
-            star.setAttribute('material', 'src', 'energy.jpg');
-            star.setAttribute('material', 'color', color);
-            document.querySelector('a-scene').appendChild(star);
-            star.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.1"});
-        }
+function createStars(amount) {
+    let starNum = amount;
+    let i;
+    for (i = 0; i < starNum; i++) {
+        let star = document.createElement('a-sphere');
+        let posx = getRandomInt(-10000, 80000);
+        let posz = getRandomInt(0, 3000);
+        let posy = getRandomInt(0, 3000);
+        let scale = getRandomInt(5, 8);
+        star.setAttribute('position', {x: posx, y: posy, z: posz});
+        star.object3D.scale.set(scale, scale, scale);
+        star.setAttribute('star', '');
+        let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
+        let color = getRandomColor(colorArr);
+        star.setAttribute('material', 'src', 'energy.jpg');
+        star.setAttribute('material', 'color', color);
+        document.querySelector('a-scene').appendChild(star);
+        star.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.1"});
+    }
 }
