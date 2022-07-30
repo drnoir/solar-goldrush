@@ -60,6 +60,50 @@ AFRAME.registerComponent('player', {
     }
 })
 
+
+AFRAME.registerComponent('draw-canvas', {
+
+    init: function()
+    {
+        this.canvas = document.querySelector("#mycanvas");
+
+        this.context = this.canvas.getContext('2d');
+
+        this.x = 200;
+        this.y = 100;
+        this.dx = 5;
+        this.dy = 3;
+    },
+
+    tick: function(t)
+    {
+        this.x += this.dx;
+        this.y += this.dy;
+
+        if (this.x > 512-50 || this.x < 0)
+            this.dx *= -1;
+        if (this.y > 512-50 || this.y < 0)
+            this.dy *= -1;
+
+        // clear canvas
+        this.context.fillStyle = "#8888FF";
+        this.context.fillRect(0,0, 512,512);
+
+        // draw rectangle
+        this.context.fillStyle = "#FF0000";
+        this.context.fillRect( this.x, this.y, 50, 50 );
+
+        // thanks to https://github.com/aframevr/aframe/issues/3936 for the update fix
+        let material = this.el.getObject3D('mesh').material;
+        if (!material.map)
+            return;
+        else
+            material.map.needsUpdate = true;
+    }
+
+});
+
+
 AFRAME.registerComponent('gamebox', {
     init: function () {
         this.direction = 1;
