@@ -8,6 +8,11 @@ body{
     background: none;
 }
 
+#spaceBG_CSS{
+    background: url("space-sky.png");
+    opacity: 0.5;
+}
+
 #playBtn{
     font-size:4em;
     position: absolute;

@@ -36,7 +36,9 @@
 
 <!--SCENE-->
 <div id="myEmbeddedScene">
-    <a-scene  embedded physics="debug: false; gravity: 0;" background="color: black">
+    <div id="spaceBG_CSS"/>
+    <a-scene vr-mode-ui="enabled: false" loading-screen="enabled: false" embedded physics="debug: false; gravity: 0;"
+             background="transparent:true;"  fog="type: linear; color: black; far:4000;">
         <!--    assets textures -->
         <a-assets>
             <img id="fac" src="fac.jpg">
@@ -44,18 +46,19 @@
             <img id="energy" src="energy.jpg">
             <img id="energyneg" src="energyneg.jpg">
             <img id="spaceBG" src="spaceBG.jpg">
-<!--            <a-asset-item id="asteroid-obj" src="asteroid.obj"></a-asset-item>-->
+            <!--            <a-asset-item id="asteroid-obj" src="asteroid.obj"></a-asset-item>-->
             <img id="hud" src="UI/hud.png">
         </a-assets>
-<!--        <a-entity environment skyType ="color" skyColor="black"></a-entity>-->
+        <!--        <a-entity environment skyType ="color" skyColor="black"></a-entity>-->
         <!-- Dim ambient lighting. -->
         <a-light type="ambient" color="white" intensity="0.2"></a-light>
         <!--    <a-light type="point" color="#39FF14" position="0 500 0" decay="1" angle="90"></a-light>-->
+
         <!--    camera -->
         <a-entity id="rig" movement-controls="fly: true; speed: 4.2" kinematic-body player>
             <a-entity id="camera" camera position="0 5 0" look-controls>
-<!--                <a-light type="point" color="#39FF14" position="0 00" decay="2" angle="0"></a-light>-->
-                <a-light type ="point" color="#39FF14" intensity="0.75"; distance ="5" decay="2" position="0 0 0"></a-light>
+                <a-light type="point" color="#39FF14" intensity="0.75" ; distance="5" decay="2"
+                         position="0 0 0"></a-light>
                 <a-cursor></a-cursor>
                 <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
                           material="src:#hud; opacity: 0.999">
