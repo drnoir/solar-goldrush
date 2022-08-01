@@ -1,11 +1,15 @@
 // script for generating buildings / game logic etc
 // global game vars
+
+import { default as genNames } from './planetGen.js';
+
 const starsNum = getRandomInt(200, 500);
 let gamestarted = false;
 let firstDamage = false;
 let health = 10;
 let spaceMana = 0;
 let fuel = 1000;
+
 
 window.onload = function () {
     // const playBtn = document.getElementById("playBtn");
@@ -60,7 +64,7 @@ AFRAME.registerComponent('player', {
             }
 
             if (e.detail.body.el.className === "star") {
-                console.log("winbox");
+                console.log("star");
                 const box = document.querySelector('a-box');
                 let winboxRemove = e.detail.body.el;
                 box.parentNode.removeChild(winboxRemove);
@@ -68,9 +72,9 @@ AFRAME.registerComponent('player', {
                 decrementScore();
             }
 
-            // debris?
-            if (e.detail.body.el.className === "star") {
-                console.log("negbox");
+            // debris? - Landing for planet
+            if (e.detail.body.el.className === "debris") {
+                console.log("star collide");
                 const box = document.querySelector('a-box');
                 document.getElementById('damage').play();
                 health--;
@@ -149,6 +153,11 @@ function beginGame() {
 
     document.getElementById('warp').play();
     document.getElementById('warp').volume = 0.4;
+
+    document.getElementById('ambience').play();
+    document.getElementById('ambience').volume = 0.3;
+    document.getElementById('ambience').loop = true;
+
     const cubesCreated = document.getElementById('cubesCreated');
     const cubesLeft = document.getElementById('cubesLeft');
     const cubesTotal = document.getElementById('totalCubes');
@@ -219,7 +228,7 @@ function getRandomColor(colors) {
 }
 
 // create a planet
-function createPlanet(sun, numPlanets, posx,posy,posz) {
+function createPlanet(sun, numPlanets, posx,posy,posz, planetnames) {
     let i;
     for (i = 0; i < numPlanets; i++) {
         // function to create planets with random position
@@ -237,14 +246,21 @@ function createPlanet(sun, numPlanets, posx,posy,posz) {
         let planetPosX = StarPosx+planetSeedx;
         let planetPosZ = StarPosz+planetSeedz ;
         let planetPosY =  StarPosy+planetSeedy;
+
         console.log( planetPosX, planetPosZ, StarPosy);
 
+        // set planet name from genearted planet names
         planet.setAttribute('position', {x: planetPosX, y: planetPosY , z:  planetPosZ });
+        planet.setAttribute('animation', "property: rotation; to: 180 360 180; loop:"+true+"dur: 10000");
+        // let envMap = './dev/textures/disturb.jpg';
+        // planet.setAttribute('material' ,"color:  #ffffff; sphericalEnvMap:"+envMap);
         planet.object3D.scale.set(scale, scale, scale);
         planet.setAttribute('planet', '');
         // add random texture for planets - TO DO
         planet.setAttribute('name', 'planet');
+        planet.setAttribute('planetName',planetnames[i]);
         planet.setAttribute('class', 'planet');
+        planet.setAttribute('animation-mixer');
 
         let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
         // texture application
@@ -299,7 +315,7 @@ function createStars(amount) {
         let posx = getRandomInt(-10000, 10000);
         let posz = getRandomInt(0,10000);
         let posy = getRandomInt(0,10000);
-        let scale = getRandomInt(5, 8);
+        let scale = getRandomInt(15, 25);
         star.setAttribute('position', {x: posx, y: posy, z: posz});
         star.object3D.scale.set(scale, scale, scale);
         star.setAttribute('star', '');
@@ -308,12 +324,20 @@ function createStars(amount) {
         // let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
         // let color = getRandomColor(colorArr);
         star.setAttribute('material', 'src', 'energy.jpg');
-        star.setAttribute('material', 'color', '#ffff00');
+        star.setAttribute('material', 'color', '#ffff33');
+        star.setAttribute('rotation', "0 0 0");
+        star.setAttribute('animation', "property: rotation; to: 180 360 180; loop:"+true+"dur: 10000");
+
         document.querySelector('a-scene').appendChild(star);
         star.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.1"});
         // star.setAttribute('light',"color:  #8f9108;  decay:  2.27;  distance:  1.5;  intensity:  2;  penumbra:  1;  type:  ambient;  shadowBias:  1.03;  shadowRadius:  1.13")
-        let numPlanets  = getRandomInt(5,10);;
-        createPlanet(star, numPlanets, posx,posy,posz);
+        let numPlanets  = getRandomInt(5,10);
+        // create var for planet names and psas number of generated planets
+        let planetnames;
+        planetnames = genNames(numPlanets);
+        createPlanet(star, numPlanets, posx,posy,posz, planetnames);
+
+
         // light generation
         // randomise intensity of lights
         // let randIntensity = this.getRandomInt(0.1, 0.6);
