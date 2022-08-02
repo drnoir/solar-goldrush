@@ -313,9 +313,9 @@ function createStars(amount) {
     for (i = 0; i < starNum; i++) {
         let star = document.createElement('a-sphere');
         let posx = getRandomInt(-10000, 10000);
-        let posz = getRandomInt(0,10000);
-        let posy = getRandomInt(0,10000);
-        let scale = getRandomInt(15, 25);
+        let posz = getRandomInt(-10000,10000);
+        let posy = getRandomInt(-10000,10000);
+        let scale = getRandomInt(25, 100);
         star.setAttribute('position', {x: posx, y: posy, z: posz});
         star.object3D.scale.set(scale, scale, scale);
         star.setAttribute('star', '');
@@ -323,10 +323,11 @@ function createStars(amount) {
         star.setAttribute('class', 'star');
         // let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
         // let color = getRandomColor(colorArr);
-        star.setAttribute('material', 'src', 'energy.jpg');
-        star.setAttribute('material', 'color', '#ffff33');
+        // star.setAttribute('material', 'src', 'energy.jpg');
+        star.setAttribute('material',  'color', 'yellow', 'shader','ios10hls');
+
         star.setAttribute('rotation', "0 0 0");
-        star.setAttribute('animation', "property: rotation; to: 180 360 180; loop:"+true+"dur: 10000");
+        star.setAttribute('animation', "property: rotation; to: 180 360 180; loop; dur: 10000");
 
         document.querySelector('a-scene').appendChild(star);
         star.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.1"});
@@ -345,3 +346,82 @@ function createStars(amount) {
         // star.setAttribute('light', 'type: spot; intensity:' + randIntensity + 'decay: 0.12; penumbra: 0.24; castShadow: false');
     }
 }
+
+AFRAME.registerComponent('star-system', {
+    schema: {
+        color: {
+            type: 'string',
+            default: "#FFF"
+        },
+        radius: {
+            type: 'number',
+            default: 300,
+            min: 0,
+        },
+        depth: {
+            type: 'number',
+            default: 300,
+            min: 0,
+        },
+        size: {
+            type: 'number',
+            default: 1,
+            min: 0,
+        },
+        count: {
+            type: 'number',
+            default: 10000,
+            min: 0,
+        },
+        texture: {
+            type: 'asset',
+            default: ''
+        }
+    },
+
+    update: function() {
+        // Check for and load star sprite
+        let texture = {};
+        if (this.data.texture) {
+            texture.transparent = true;
+            texture.map = new THREE.TextureLoader().load(this.data.texture);
+        }
+
+        const stars = new THREE.Geometry();
+
+        // Randomly create the vertices for the stars
+        while (stars.vertices.length < this.data.count) {
+            stars.vertices.push(this.randomVectorBetweenSpheres(this.data.radius, this.data.depth));
+        }
+
+        // Set the star display options
+        const starMaterial = new THREE.PointsMaterial(Object.assign(texture, {
+            color: this.data.color,
+            size: this.data.size
+        }));
+
+        // Add the star particles to the element
+        this.el.setObject3D('star-system', new THREE.Points(stars, starMaterial));
+    },
+
+    remove: function() {
+        this.el.removeObject3D('star-system');
+    },
+
+    // Returns a random vector between the inner sphere
+    // and the outer sphere created with radius + depth
+    randomVectorBetweenSpheres: function(radius, depth) {
+        const randomRadius = Math.floor(Math.random() * (radius + depth - radius + 1) + radius);
+        return this.randomSphereSurfaceVector(randomRadius);
+    },
+
+    // Returns a vector on the face of sphere with given radius
+    randomSphereSurfaceVector: function(radius) {
+        const theta = 2 * Math.PI * Math.random();
+        const phi = Math.acos(2 * Math.random() - 1);
+        const x = radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.sin(phi) * Math.sin(theta);
+        const z = radius * Math.cos(phi);
+        return new THREE.Vector3(x, y, z);
+    }
+});

@@ -38,9 +38,10 @@
 
 <!--SCENE-->
 <div id="myEmbeddedScene">
-    <div id="spaceBG_CSS"/>
+<!--    <div id="spaceBG_CSS"/>-->
     <a-scene vr-mode-ui="enabled: false" loading-screen="enabled: false" embedded physics="debug: false; gravity: 0;"
-             background="transparent:true;"  fog="type: linear; color: ##E5E5E5; far:10000;">
+             background="transparent:true;"  fog="type: linear; color: ##E5E5E5; far:90000;">
+        <a-entity star-system ="radius:10000" depth="10000"></a-entity>
         <!--    assets textures -->
         <a-assets>
             <img id="fac" src="fac.jpg">
@@ -66,16 +67,16 @@
                 <a-light type="point" color="#39FF14" intensity="0.75" ; distance="5" decay="2"
                          position="0 0 0"></a-light>
 <!--               crosshair-->
-                <a-entity
-                        animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.09 0.09 0.09; to: 0.2  0.2  0.2"
-                        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 0.1 0.1 0.1;; to: 0.2  0.2  0.2"
-                        animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 0.2  0.2  0.2"
-                        cursor="fuse: true;"
-                        material="color: #00009c; shader: flat"
-                        position="0 0.5 -2"
-                        geometry="primitive: ring">
-                </a-entity>
-                <a-entity text="value: Hello World;"  position="0 0.8 -2"></a-entity>
+<!--                <a-entity-->
+<!--                        animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.09 0.09 0.09; to: 0.2  0.2  0.2"-->
+<!--                        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 0.1 0.1 0.1;; to: 0.2  0.2  0.2"-->
+<!--                        animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 0.2  0.2  0.2"-->
+<!--                        cursor="fuse: true;"-->
+<!--                        material="color: #00009c; shader: flat"-->
+<!--                        position="0 0.5 -2"-->
+<!--                        geometry="primitive: ring">-->
+<!--                </a-entity>-->
+                <a-entity text="value: Planet Name;"  position="0 0.8 -2"></a-entity>
 <!--                hud-->
                 <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
                           material="src:#hud; opacity: 0.999">
