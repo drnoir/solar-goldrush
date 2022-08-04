@@ -2,20 +2,24 @@
 // global game vars
 
 import { default as genNames } from './planetGen.js';
-
-const starsNum = getRandomInt(10, 20);
+import { default as generatePlanet } from './generatePlanetSurface.js';
+const starsNum = getRandomInt(40, 140);
 let gamestarted = false;
 let firstDamage = false;
 let health = 10;
 let spaceMana = 0;
 let fuel = 1000;
 let planetNameCurrent = -1;
-
+let shipPosX; let shipPosY; let shipPosZ;
+let planetnames = [];
+let randomPlanetId;
+let landedPlanet = false;
 
 window.onload = function () {
     // const playBtn = document.getElementById("playBtn");
     const Win = document.getElementById("Win");
     beginGame();
+
     // playBtn.addEventListener('click', beginGame);
 
     // LOAD GAME IN BG? PRELOADER?
@@ -26,27 +30,46 @@ document.addEventListener("keydown", e => {
     console.log("key Pressed"+ e.code);
     let key = e.key.toUpperCase();
     // 87 - w
-    if (key === 'W'){
+    if (key === 'W' && !landedPlanet ) {
         const ship = document.getElementById('rig');
-        ship.setAttribute('movement-controls', 'speed'+0.5);
-        ship.setAttribute('wasd-controls', 'acceleration'+1);
+        ship.setAttribute('movement-controls', 'speed' + 0.5);
+        ship.setAttribute('wasd-controls', 'acceleration' + 1);
         console.log(ship)
         // add event listener for w press for accel
         document.getElementById('accel').play();
         document.getElementById('accel').volume = 0.4;
     }
-
 });
+
 
 document.addEventListener("keydown", e => {
     if (e.code === 'Space') {
         const ship = document.getElementById('rig');
-        ship.setAttribute('movement-controls', 'speed' +2);
-        ship.setAttribute('wasd-controls', 'acceleration'+15);
+        // ship.setAttribute('movement-controls', 'speed' +2);
+        // ship.setAttribute('wasd-controls', 'acceleration'+15);
         console.log(ship);
         // add event listener for w press for accel
         document.getElementById('warpEngage').play();
         document.getElementById('warpEngage').volume = 0.8;
+
+        ship.setAttribute('enabled','false');
+        const camShip = document.getElementById("camera");
+        camShip.setAttribute('enabled','false');
+
+        // test for now - space wipe and planet gen
+        const spaceScene = document.getElementById("spaceScene");
+        spaceScene.setAttribute('visible','false');
+        const planetScene = document.getElementById("planetScene");
+        let planetPos = planetScene.getAttribute('position');
+        const playerFPS = document.getElementById("playerWalk");
+
+        const camFPS = document.getElementById("camera");
+        camFPS.setAttribute('enabled','true');
+
+        playerFPS.setAttribute('position',planetPos);
+        playerFPS.setAttribute('enabled','true');
+        planetScene.setAttribute('visible','true');
+        landedPlanet = true;
     }
 });
 
@@ -68,6 +91,9 @@ document.addEventListener("keydown", e => {
 
 AFRAME.registerComponent('player', {
     init: function () {
+
+        this.planetNav = 0;
+
         this.el.addEventListener('collide', function (e) {
             console.log('Player has collided with ', e.detail.body.el);
             e.detail.target.el; // Original entity (playerEl).
@@ -115,7 +141,26 @@ AFRAME.registerComponent('player', {
                 health = -10;
             }
         });
+    },
+    tick: function () {
+    // add init line? TESTING
+    //     if (this.planetNav===0 && gamestarted) {
+    //         console.log('rand planet id'+randomPlanetId);
+    //         const randomPlanet = document.getElementById('planet' + randomPlanetId);
+    //         console.log(randomPlanet)
+    //         let randomPlanetPos = randomPlanet.getAttribute('position');
+    //         console.log('rand planet' + randomPlanet, randomPlanetId, randomPlanetPos);
+    //         let line = document.createElement('a-entity');
+    //         // Add the line to the element
+    //         const ship = document.getElementById('rig');
+    //         let shipPos = ship.getAttribute('position')
+    //         console.log(shipPos);
+    //         line.setAttribute('line', {start: shipPos, end: randomPlanetPos, color: 'red'});
+    //         ship.appendChild(line);
+    //         this.planetNav++;
+    //     }
     }
+
 })
 
 // asteroid - WHEN added
@@ -177,10 +222,7 @@ function beginGame() {
     document.getElementById('ambience').volume = 0.5;
     document.getElementById('ambience').loop = true;
 
-    const cubesCreated = document.getElementById('cubesCreated');
-    const cubesLeft = document.getElementById('cubesLeft');
-    const cubesTotal = document.getElementById('totalCubes');
-    const healthLeft = document.getElementById('healthLeft');
+
     const portalNum = 3;
 
     createStars(starsNum);
@@ -254,7 +296,7 @@ function createRandomDebris() {
     let posxP = getRandomInt(-50000, 50000);
     let poszP = getRandomInt(-50000, 50000);
     let posyP = getRandomInt(-50000, 50000);
-    document.querySelector('a-scene').appendChild(asteroidContainer);
+    document.getElementById('spaceScene').appendChild(asteroidContainer);
     asteroidContainer.setAttribute('position', {x: posxP, y: posyP, z: poszP});
     let randomDebrisNum =getRandomInt(80, 200);
     let i;
@@ -290,8 +332,6 @@ function createPlanet(star, numPlanets, posx,posy,posz, planetnames) {
 
         // console.log(StarPosx,StarPosy,StarPosz);
 
-        // scale and genearte random orbits
-        let scale = getRandomInt(1, 2);
         // let planetSeedx = getRandomInt(200, 500);let planetSeedy = getRandomInt(200, 500); let planetSeedz = getRandomInt(200, 500);
         // let planetPosX = StarPosx+planetSeedx;let planetPosZ = StarPosz+planetSeedz ;let planetPosY =  StarPosy+planetSeedy;
 
@@ -311,6 +351,8 @@ function createPlanet(star, numPlanets, posx,posy,posz, planetnames) {
         let orbitDistance = getRandomInt(20, 30);
         planetOrbit.setAttribute('rotation', "0 0 0");
         planetOrbit.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 99999999999');
+        // scale and genearte random orbits
+        let scale = getRandomInt(0.2, 0.8);
         planet.object3D.scale.set(scale, scale, scale);
         planet.setAttribute('planet', '');
         // add random texture for planets - TO DO
@@ -359,7 +401,7 @@ function createPortals(portalsNum) {
         portal.setAttribute('name', 'portal');
         portal.setAttribute('class', 'portal');
         portal.setAttribute('material', 'src', '#wormholeBG_v');
-        document.querySelector('a-scene').appendChild(portal);
+        document.getElementById('spaceScene').appendChild(portal);
     }
 }
 
@@ -386,23 +428,25 @@ function createStars(amount) {
         star.setAttribute('rotation', "0 0 0");
         star.setAttribute('animation', "property: rotation; to: 180 360 180; loop; dur: 10000");
 
-        document.querySelector('a-scene').appendChild(star);
+        document.getElementById('spaceScene').appendChild(star);
         star.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.1"});
         // star.setAttribute('light',"color:  #8f9108;  decay:  2.27;  distance:  1.5;  intensity:  2;  penumbra:  1;  type:  ambient;  shadowBias:  1.03;  shadowRadius:  1.13")
         let numPlanets  = getRandomInt(5,10);
         // create var for planet names and psas number of generated planets
-        let planetnames;
         planetnames = genNames(numPlanets);
-        createPlanet(star, numPlanets, posx,posy,posz, planetnames);
 
+        createPlanet(star, numPlanets, posx,posy,posz, planetnames);
         // light generation
         // randomise intensity of lights
         // let randIntensity = this.getRandomInt(0.1, 0.6);
         // // set light attirbute
         // star.setAttribute('light', 'type: spot; intensity:' + randIntensity + 'decay: 0.12; penumbra: 0.24; castShadow: false');
     }
+    randomPlanetId = 'planet' + [getRandomInt(0, planetnames.length)];
 }
 
+
+//draw the background stars
 AFRAME.registerComponent('star-system', {
     schema: {
         color: {
