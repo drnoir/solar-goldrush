@@ -2,14 +2,14 @@
 // global game vars
 
 import { default as genNames } from './planetGen.js';
-import { default as generatePlanet } from './generatePlanetSurface.js';
+import generatePlanetSurface, { default as generatePlanet } from './generatePlanetSurface.js';
 const starsNum = getRandomInt(40, 140);
 let gamestarted = false;
 let firstDamage = false;
 let health = 10;
 let spaceMana = 0;
 let fuel = 1000;
-let planetNameCurrent = -1;
+let planetNameCurrent = 0;
 let shipPosX; let shipPosY; let shipPosZ;
 let planetnames = [];
 let randomPlanetId;
@@ -49,8 +49,8 @@ document.addEventListener("keydown", e => {
         // ship.setAttribute('wasd-controls', 'acceleration'+15);
         console.log(ship);
         // add event listener for w press for accel
-        document.getElementById('warpEngage').play();
-        document.getElementById('warpEngage').volume = 0.8;
+        document.getElementById('scan').play();
+        document.getElementById('scan').volume = 0.9;
 
         ship.setAttribute('enabled','false');
         const camShip = document.getElementById("camera");
@@ -61,14 +61,18 @@ document.addEventListener("keydown", e => {
         spaceScene.setAttribute('visible','false');
         const planetScene = document.getElementById("planetScene");
         let planetPos = planetScene.getAttribute('position');
-        const playerFPS = document.getElementById("playerWalk");
-
-        const camFPS = document.getElementById("camera");
-        camFPS.setAttribute('enabled','true');
-
-        playerFPS.setAttribute('position',planetPos);
-        playerFPS.setAttribute('enabled','true');
+        let playerFPS = document.createElement('a-entity');
+        playerFPS.setAttribute('kinematic-body','')
+        playerFPS.setAttribute('wasd-controls', 'acceleration:100')
+        let playerCam = document.createElement('a-entity');
+        playerCam.setAttribute('camera','')
+        playerCam.setAttribute('look-controls','')
+        playerFPS.setAttribute('position','0 5 0')
+        playerCam.setAttribute('position','0 2 0')
+        playerFPS.appendChild(playerCam);
+        planetScene.appendChild(playerFPS);
         planetScene.setAttribute('visible','true');
+        generatePlanet();
         landedPlanet = true;
     }
 });
@@ -186,30 +190,29 @@ AFRAME.registerComponent('debris', {
     }
 
 });
-
-// planet rotation and compoenent etc
-// AFRAME.registerComponent('planet', {
-//     init: function () {
-//         this.direction = 1;
-//         this.rotation = new THREE.Vector3();
-//         this.rotation.copy(this.el.object3D.rotation);
-//         setTimeout(() => {
-//             this.ready = true;
-//         }, 3000);
-//     },
 //
-//     tick: function () {
-//         if (!this.ready) return;
-//         let rotate= this.el.object3D.position.y;
-//         if ( rotate <= 0) {
-//             this.rotation = 1;
-//         } else if ( rotate >= 5) {
-//             this.rotation = -1;
-//         }
-//         this.el.object3D.rotation.set(this. rotate.x,  rotate.y + 0.05 * this.direction, this. rotate.z);
-//     }
-//     }
-// );
+// // planet rotation and compoenent etc
+AFRAME.registerComponent('planet', {
+    init: function () {
+        this.direction = 1;
+        this.rotation = new THREE.Vector3();
+        this.rotation.copy(this.el.object3D.rotation);
+        setTimeout(() => {
+            this.ready = true;
+        }, 3000);
+    },
+
+    tick: function () {
+        if (!this.ready) return;
+        var rotation = this.el.object3D.rotation.y;
+        if (rotation <= 0) {
+            this.direction = 1;
+        } else if (rotation >= 5) {
+            this.direction = -1;
+        }
+        this.el.object3D.rotation.set(this.rotation.x, rotation + 0.002 * this.direction, this.rotation.z);
+    }
+});
 
 function beginGame() {
     let time = 0;
@@ -219,9 +222,13 @@ function beginGame() {
     document.getElementById('warp').volume = 0.4;
 
     document.getElementById('ambience').play();
-    document.getElementById('ambience').volume = 0.5;
+    document.getElementById('ambience').volume = 0.8;
     document.getElementById('ambience').loop = true;
 
+    document.getElementById('background').play();
+    document.getElementById('background').volume = 0.15;
+    document.getElementById('background').pitch = 0.15;
+    document.getElementById('background').loop = true;
 
     const portalNum = 3;
 
@@ -293,9 +300,9 @@ function getRandomColor(colors) {
 function createRandomDebris() {
     let asteroidContainer = document.createElement('a-entity');
 
-    let posxP = getRandomInt(-50000, 50000);
-    let poszP = getRandomInt(-50000, 50000);
-    let posyP = getRandomInt(-50000, 50000);
+    let posxP = getRandomInt(-10000, 10000);
+    let poszP = getRandomInt(-5000, 10000);
+    let posyP = getRandomInt(-1000, 21000);
     document.getElementById('spaceScene').appendChild(asteroidContainer);
     asteroidContainer.setAttribute('position', {x: posxP, y: posyP, z: poszP});
     let randomDebrisNum =getRandomInt(80, 200);
@@ -322,24 +329,12 @@ function createRandomDebris() {
 }
 
 // create a planet
-function createPlanet(star, numPlanets, posx,posy,posz, planetnames) {
+function createPlanet(star, scale, numPlanets, posx,posy,posz, planetnames) {
     let i;
     for (i = 0; i < numPlanets; i++) {
         // function to create planets with random position
         let planet = document.createElement('a-sphere');
-        // // get pos of sun
-        // let StarPosx = posx;  let  StarPosy = posy; let StarPosz = posz;
 
-        // console.log(StarPosx,StarPosy,StarPosz);
-
-        // let planetSeedx = getRandomInt(200, 500);let planetSeedy = getRandomInt(200, 500); let planetSeedz = getRandomInt(200, 500);
-        // let planetPosX = StarPosx+planetSeedx;let planetPosZ = StarPosz+planetSeedz ;let planetPosY =  StarPosy+planetSeedy;
-
-        // set planet name from genearted planet names
-        // planet.setAttribute('position', {x: planetPosX, y: planetPosY , z:  planetPosZ });
-        // planet.setAttribute('animation', "autoplay:true; property: rotation; to: 180 360 180; loop: true; dur: 10000");
-        // let envMap = './dev/textures/disturb.jpg';
-        // planet.setAttribute('material' ,"color:  #ffffff; sphericalEnvMap:"+envMap);
         let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
         // texture application
         // let plaettextArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
@@ -348,45 +343,37 @@ function createPlanet(star, numPlanets, posx,posy,posz, planetnames) {
         let color = getRandomColor(colorArr);
         let randomTextureID= getRandomInt(0, planettextureArr.length-1);
         let randomTexture = planettextureArr[randomTextureID];
+        let planetType = returnPlanetType(randomTexture)
         // add aura
         let aura = document.createElement('a-sphere');
         // planet.setAttribute('material', 'src', 'energy.jpg');
-        let planetOrbit = document.createElement('a-entity');
-        let orbitDistance = getRandomInt(20, 30);
-        planetOrbit.setAttribute('rotation', "0 0 0");
-        planetOrbit.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 99999999999');
+
         // scale and genearte random orbits
-        let scale = getRandomInt(0.2, 0.8);
-        planet.object3D.scale.set(scale, scale, scale);
+        let planetScale = scale/getRandomInt(2,4)/500;
+        console.log(planetScale);
+        planet.object3D.scale.set(planetScale ,planetScale,planetScale);
         planet.setAttribute('planet', '');
         // add random texture for planets - TO DO
         planet.setAttribute('name', 'planet');
         planet.setAttribute('planet', '');
+        planet.setAttribute('planet-type', planetType);
         planet.setAttribute('cursor-listener', '');
         planet.setAttribute('planetName',planetnames[planetNameCurrent]);
+        console.log('type testing'+ randomTexture)
         planet.setAttribute('class', 'planet'+i);
         // planet.setAttribute('class', 'clickable');
         planet.setAttribute('cursor-listener', '');
         planet.setAttribute('animation-mixer');
         planet.setAttribute('material', 'src', randomTexture );
-        planet.setAttribute('body', {type: 'dynamic', mass: "8000", linearDamping: "0.5"});
+        planet.setAttribute('body', {type: 'dynamic', mass: "0", linearDamping: "0.5"});
         planet.setAttribute('material', 'color', color);
-        planetOrbit.appendChild(planet);
-        let planetPos = {x: orbitDistance, y:0,z:0};
-        // planet.setAttribute('position', planetPos.x,planetPos.y,planetPos.z)
+        let planetPos = {x:  getRandomInt(20, 40),y:0,z:getRandomInt(10, 50)};
+        planet.setAttribute('position',  planetPos )
         star.appendChild(planet);
         planetNameCurrent++;
     }
 
 }
-
-
-// aura ode to reuse
-// let auraScale = getRandomInt(scale + 25, scale + 25);
-// aura.setAttribute('body', {type: 'static'})
-// aura.setAttribute('position', {x: posx, y: posy, z: posz});
-// aura.object3D.scale.set(auraScale, auraScale, auraScale);
-// aura.setAttribute('planetAura', '');
 
 function createPortals(portalsNum) {
     let i;
@@ -415,10 +402,11 @@ function createStars(amount) {
     let i;
     for (i = 0; i < starNum; i++) {
         let star = document.createElement('a-sphere');
-        let posx = getRandomInt(-10000, 10000);
-        let posz = getRandomInt(-10000,10000);
-        let posy = getRandomInt(-10000,10000);
-        let scale = getRandomInt(25, 100);
+        let posx = getRandomInt(-25000, 25000);
+        let posz = getRandomInt(-25000,25000);
+        let posy = getRandomInt(-25000,25000);
+        let scale = getRandomInt(300, 430);
+        let scaleGlow = getRandomInt(scale*1.5/10);
         star.setAttribute('position', {x: posx, y: posy, z: posz});
         star.object3D.scale.set(scale, scale, scale);
         star.setAttribute('star', '');
@@ -429,31 +417,35 @@ function createStars(amount) {
         // let color = getRandomColor(colorArr);
         star.setAttribute( 'src', 'energy.jpg');
         star.setAttribute('radius', '1');
-        star.setAttribute('material',  'color', 'yellow', 'shader','ios10hls; emissive: yellow; emissive-intensity: 0.9;   flat:true');
-
+        star.setAttribute('material',  'emissive: yellow; emissive-intensity: 5;   flat:true');
+        star.setAttribute('color',  'white');
         star.setAttribute('rotation', "0 0 0");
-        star.setAttribute('animation', "property: rotation; to: 180 360 180; loop; dur: 10000");
+        // star.setAttribute('animation', "property: rotation; to: 180 360 180; loop; dur: 10000");
         let glowSphere =  document.createElement('a-entity');
         glowSphere.setAttribute('id', "glowSphere");
         let glow =  document.createElement('a-image');
-        glow.setAttribute('material', 'transparent: true; opacity: 0.8; alphaTest: 0.01;');
+        glow.setAttribute('material', 'transparent: true; opacity: 1; alphaTest: 0.01;');
         glow.setAttribute('src', '#glow');
         glow.setAttribute('geometry', 'primitive:  sphere');
         glow.setAttribute('color', 'yellow');
         glow.setAttribute('look-at', '#rig');
-        glow.setAttribute('width', '5');
-        glow.setAttribute('height', '5');
-        glow.setAttribute('radius', '2.5');
+        glow.setAttribute('radius', scaleGlow );
         glowSphere.appendChild(glow);
         star.appendChild(glowSphere);
         document.getElementById('spaceScene').appendChild(star);
-        star.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.1"});
+        star.setAttribute('body', {type: 'dynamic', mass: "0", linearDamping: "0.5"});
         // star.setAttribute('light',"color:  #8f9108;  decay:  2.27;  distance:  1.5;  intensity:  2;  penumbra:  1;  type:  ambient;  shadowBias:  1.03;  shadowRadius:  1.13")
         let numPlanets  = getRandomInt(5,10);
         // create var for planet names and psas number of generated planets
         planetnames = genNames(numPlanets);
 
-        createPlanet(star, numPlanets, posx,posy,posz, planetnames);
+        // let planetOrbit = document.createElement('a-animation');
+        // planetOrbit.setAttribute('rotation', "0 360 0");
+        // planetOrbit.setAttribute('dur', '10000');
+        // planetOrbit.setAttribute('fill', 'forwards');
+        // planetOrbit.setAttribute('repeat', 'indefinite');
+        // star.appendChild(planetOrbit);
+        createPlanet(star, scale, numPlanets, posx,posy,posz, planetnames);
         // light generation
         // randomise intensity of lights
         // let randIntensity = this.getRandomInt(0.1, 0.6);
@@ -473,7 +465,7 @@ AFRAME.registerComponent('star-system', {
         },
         radius: {
             type: 'number',
-            default: 900,
+            default: 1200,
             min: 0,
         },
         depth: {
@@ -488,7 +480,7 @@ AFRAME.registerComponent('star-system', {
         },
         count: {
             type: 'number',
-            default: 4000,
+            default: 6000,
             min: 0,
         },
         texture: {
@@ -544,3 +536,25 @@ AFRAME.registerComponent('star-system', {
         return new THREE.Vector3(x, y, z);
     }
 });
+
+// function to return planet type from param
+function returnPlanetType(textureName) {
+    switch (textureName) {
+        case '#gasPlanet':
+            return 'Gas'
+            break;
+        case '#icyPlanet':
+            return 'Ice'
+            break;
+        case '#desertPlanet':
+            return 'Desert'
+            break;
+        case '#waterPlanet':
+            return 'Water'
+            break;
+        case '#TerrestrialPlanet':
+            return 'Terrestrial'
+            break;
+        default:
+
+    }};

@@ -12,7 +12,7 @@ function twist(x) {
 }
 
 function next(seeds) {
-    return seeds.map(function(seed) {
+    return seeds.map(function (seed) {
         return twist(seed);
     });
 }
@@ -20,44 +20,42 @@ function next(seeds) {
 function tweakseed(seeds) {
     var tmp;
 
-    tmp = seeds.reduce(function(total, seed) {
+    tmp = seeds.reduce(function (total, seed) {
         return total += seed;
     }, 0);
 
-    return seeds.map( function ( seed, index, arr ) {
+    return seeds.map(function (seed, index, arr) {
         return arr[index + 1] || (tmp & 65535)
     });
 };
 
 
-function makename(pairs, seeds)
-{
+function makename(pairs, seeds) {
     var name = [];
     /* Modify pair if you want to have names shorter or longer than 8 chars */
     /* I'll leave that as an exercise for you. */
     var pair = [0, 0, 0, 0];
     var longname = seeds[0] & 64;
 
-    pair = pair.map(function() {
+    pair = pair.map(function () {
         seeds = tweakseed(seeds);
         return 2 * ((seeds[2] / 256) & 31);
     });
 
-    pair.forEach(function(value, index, arr) {
-        if (longname || ( index < (arr.length - 1))) {
+    pair.forEach(function (value, index, arr) {
+        if (longname || (index < (arr.length - 1))) {
             name.push(pairs[value]);
             name.push(pairs[value + 1]);
         }
     });
 
     return name.join('').toLowerCase()
-        .replace(/^\w/,  function(letter) {
+        .replace(/^\w/, function (letter) {
             return letter.toUpperCase();
         });
 }
 
-function genNames(numPlanets)
-{
+function genNames(numPlanets) {
     var names = [];
     var pairs;
     var num = numPlanets
@@ -65,11 +63,12 @@ function genNames(numPlanets)
     pairs = digrams.substring(24);
 
     while (--num) {
-        names.push( makename(pairs, seeds) );
+        names.push(makename(pairs, seeds));
         seeds = tweakseed(next(seeds));
     }
 
     return names;
 }
 
-export default genNames;
+
+export default genNames ;
