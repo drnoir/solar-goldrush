@@ -1,74 +1,106 @@
 <html>
 <head>
     <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
-    <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v4.0.1/dist/aframe-physics-system.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
-    <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
+    <script src="jslibs/aframe-physics-sysem.min.js"></script>
+    <script src="jslibs/aframe-extras.min.js"></script>
+    <script src="jslibs/aframe-particle-system-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-render-order-component@1.0.0/dist/aframe-render-order-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-spritesheet-component/dist/aframe-spritesheet-component.min.js"></script>
     <script src="2.0/js libs/aframe-mobile-controls-master/aframe-mobile-controls-master/components/tilt-turn/tilt-turn.js"></script>
     <script src="2.0/js libs/aframe-mobile-controls-master/aframe-mobile-controls-master/components/twoway-motion/twoway-motion.js"></script>
     <!--  random enviroment scripts-->
-    <script src="https://unpkg.com/aframe-environment-component@1.2.0/dist/aframe-environment-component.min.js"></script>
-    <script src="main.js"></script>
+    <script src="jslibs/aframe-enviroment-component.min.js"></script>
+    <script src="planetGen.js" type="module"></script>
+    <script src="main.js" type="module"></script>
     <link rel="stylesheet" href="css/main.css">
 </head>
-
 <body>
 <!--AUDIO-->
+<!--// need to change to OGGG or MPR-->
 <audio id="myAudio" src="sound/music.wav"></audio>
+<audio id="ambience" src="sound/ambience.wav"></audio>
+<audio id="accel" src="sound/WarpDrive_02.mp3"></audio>
 <audio id="pickup" src="sound/pickup.wav"></audio>
 <audio id="damage" src="sound/damage.wav"></audio>
 <audio id="collide" src="sound/collision.wav"></audio>
 <audio id="overheat" src="sound/overheating.wav"></audio>
 <audio id="warp" src="sound/warp-drive.wav"></audio>
-
+<audio id="warpEngage" src="sound/WarpDrive_01.mp3"></audio>
+<audio id="background" src="sound/background-beep.mp3"></audio>
+<audio id="scan" src="sound/scan.mp3"></audio>
 <!--UI-->
-<div class="timer">
-    Time Elapsed: <span id="timeLeft"></span> / <span id="totalTime"></span>
-</div>
-
 <!--<div id="playBtn">Start</div>-->
 <div id="Win">
     <h2>YOU WON</h2>
     <button id="restart">Restart</button>
 </div>
-
 <!--SCENE-->
 <div id="myEmbeddedScene">
-    <a-scene embedded physics="debug: false; gravity: 0;" background="color: black" >
-        <!--    assets textures -->c
+    <!--    <div id="spaceBG_CSS"/>-->
+    <a-scene vr-mode-ui="enabled: false" loading-screen="enabled: false" embedded physics="debug: false; gravity: 0;"
+             background="transparent:true;" fog="type: linear; color: ##E5E5E5; far:90000;" renderer="sortObjects: true;">
+        <!--    assets textures -->
         <a-assets>
             <img id="fac" src="fac.jpg">
-            <video id="spaceBG_v" autoplay loop="true" src="spaceBG.mp4"></video>
+            <video id="wormholeBG_v" autoplay loop="true" src="spaceBG.mp4"></video>
             <img id="energy" src="energy.jpg">
             <img id="energyneg" src="energyneg.jpg">
             <img id="spaceBG" src="spaceBG.jpg">
-            <a-asset-item id="asteroid-obj" src="asteroid.obj"></a-asset-item>
+<!--            planet textures-->
+            <img id="swampPlanet" src="textures/swamp.png">
+            <img id="martianPlanet" src="textures/Martian.png">
+            <img id="glow" src="textures/glow.png">
+            <img id="gasPlanet" src="textures/Gaseous2.png">
+            <img id="icyPlanet" src="textures/Icy.png">
+            <img id="desertPlanet" src="textures/Savannah.png">
+            <img id="waterPlanet" src="textures/water.jpg">
+            <img id="TerrestrialPlanet" src="textures/Terrestrial1.png">
+            <img id="debris" src="textures/volcanic.png">
             <img id="hud" src="UI/hud.png">
         </a-assets>
+        <!--        <a-entity environment skyType ="color" skyColor="black"></a-entity>-->
         <!-- Dim ambient lighting. -->
-        <a-light type="ambient" color="white" intensity="0.5"></a-light>
+        <a-light type="ambient" color="white" intensity="0.8"></a-light>
         <!--    <a-light type="point" color="#39FF14" position="0 500 0" decay="1" angle="90"></a-light>-->
-        <!--    camera -->
-        <a-entity id="rig" movement-controls="fly: true; speed: 5.2" kinematic-body player>
-            <a-entity id="camera" camera position="0 5 0" look-controls>
-                <a-cursor></a-cursor>
-                <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
-                          material="src:#hud; opacity: 0.999">
-                    <!-- strobe when damaged-->
-                    <a-entity id="strobe" geometry="primitive: plane; height: 10; width: 10"
-                              visible="false"
-                              position="0 0 -1"
-                              color="red" radius="1.2" material="opacity: 0.5"
-                              animation="property: components.material.material.color;type: color;to: red;dur: 500;dir: alternate;loop: true"></a-entity>
+        <a-entity id="spaceScene" visible = "true">
+            <a-entity star-system="radius:10000" depth="10000"></a-entity>
+            <!--    camera -->
+            <a-entity id="rig" movement-controls="fly: true; speed: 10"
+                kinematic-body
+                player
+                >
+                <a-entity id="camera" camera position="0 5 0" look-controls>
+                    <a-light type="point" color="#39FF14" intensity="0.75" ; distance="5" decay="2"
+                             position="0 0 0"></a-light>
+<!--                    &lt;!&ndash;               crosshair&ndash;&gt;-->
+<!--                                    <a-entity-->
+<!--                                            animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.09 0.09 0.09; to: 0.2  0.2  0.2"-->
+<!--                                            animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 0.1 0.1 0.1;; to: 0.2  0.2  0.2"-->
+<!--                                            animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 0.2  0.2  0.2"-->
+<!--                                            cursor="fuse: true;"-->
+<!--                                            material="color: #00009c; shader: flat"-->
+<!--                                            position="0 0.5 -2"-->
+<!--                                            geometry="primitive: ring">-->
+<!--                                    </a-entity>-->
+                    <a-cursor  position="0 0.5 -2"></a-cursor>
+                    <a-entity text="value: Planet Name;" position="0 0.8 -2"></a-entity>
+                    <!--                hud-->
+                    <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
+                              material="src:#hud; opacity: 0.999">
+                        <!-- strobe when damaged-->
+                        <a-entity id="strobe" geometry="primitive: plane; height: 10; width: 10"
+                                  visible="false"
+                                  position="0 0 -1"
+                                  color="red" radius="1.2" material="opacity: 0.5"
+                                  animation="property: components.material.material.color;type: color;to: red;dur: 500;dir: alternate;loop: true"></a-entity>
+                    </a-entity>
                 </a-entity>
             </a-entity>
         </a-entity>
+        <a-entity id="planetScene" visible = "false"></a-entity>
         <!--environment-->
         <!--    <a-entity obj-model="obj: #asteroid-obj; mtl: #snow"></a-entity>-->
         <!-- Defining the URL inline. Not recommended but more comfortable for web developers. -->
-        <!--      <a-sky src="#spaceBG"></a-sky>-->
-        <!--      <a-video src="#spaceBG"></a-video>-->
-<!--        <a-sky src="#spaceBG"></a-sky>-->
     </a-scene>
 
 </div>
