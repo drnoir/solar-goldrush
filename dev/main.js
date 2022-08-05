@@ -343,7 +343,11 @@ function createPlanet(star, numPlanets, posx,posy,posz, planetnames) {
         let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
         // texture application
         // let plaettextArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
+        let planettextureArr = ['#martianPlanet','#gasPlanet','#icyPlanet','#desertPlanet','#waterPlanet','#TerrestrialPlanet'];
+
         let color = getRandomColor(colorArr);
+        let randomTextureID= getRandomInt(0, planettextureArr.length-1);
+        let randomTexture = planettextureArr[randomTextureID];
         // add aura
         let aura = document.createElement('a-sphere');
         // planet.setAttribute('material', 'src', 'energy.jpg');
@@ -364,11 +368,12 @@ function createPlanet(star, numPlanets, posx,posy,posz, planetnames) {
         // planet.setAttribute('class', 'clickable');
         planet.setAttribute('cursor-listener', '');
         planet.setAttribute('animation-mixer');
-        planet.setAttribute('material', 'src', '#swampPlanet');
+        planet.setAttribute('material', 'src', randomTexture );
         planet.setAttribute('body', {type: 'dynamic', mass: "8000", linearDamping: "0.5"});
         planet.setAttribute('material', 'color', color);
         planetOrbit.appendChild(planet);
-        planet.setAttribute('position', orbitDistance+'0,0')
+        let planetPos = {x: orbitDistance, y:0,z:0};
+        // planet.setAttribute('position', planetPos.x,planetPos.y,planetPos.z)
         star.appendChild(planet);
         planetNameCurrent++;
     }
@@ -422,12 +427,25 @@ function createStars(amount) {
         star.setAttribute('cursor-listener', '');
         // let colorArr = ['#880000', '#274E13', '#3D85C6', '#7F6000'];
         // let color = getRandomColor(colorArr);
-        star.setAttribute('material', 'src', 'energy.jpg');
-        star.setAttribute('material',  'color', '#ffff00', 'shader','ios10hls');
+        star.setAttribute( 'src', 'energy.jpg');
+        star.setAttribute('radius', '1');
+        star.setAttribute('material',  'color', 'yellow', 'shader','ios10hls; emissive: yellow; emissive-intensity: 0.9;   flat:true');
 
         star.setAttribute('rotation', "0 0 0");
         star.setAttribute('animation', "property: rotation; to: 180 360 180; loop; dur: 10000");
-
+        let glowSphere =  document.createElement('a-entity');
+        glowSphere.setAttribute('id', "glowSphere");
+        let glow =  document.createElement('a-image');
+        glow.setAttribute('material', 'transparent: true; opacity: 0.8; alphaTest: 0.01;');
+        glow.setAttribute('src', '#glow');
+        glow.setAttribute('geometry', 'primitive:  sphere');
+        glow.setAttribute('color', 'yellow');
+        glow.setAttribute('look-at', '#rig');
+        glow.setAttribute('width', '5');
+        glow.setAttribute('height', '5');
+        glow.setAttribute('radius', '2.5');
+        glowSphere.appendChild(glow);
+        star.appendChild(glowSphere);
         document.getElementById('spaceScene').appendChild(star);
         star.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.1"});
         // star.setAttribute('light',"color:  #8f9108;  decay:  2.27;  distance:  1.5;  intensity:  2;  penumbra:  1;  type:  ambient;  shadowBias:  1.03;  shadowRadius:  1.13")
@@ -488,6 +506,7 @@ AFRAME.registerComponent('star-system', {
         }
 
         const stars = new THREE.Geometry();
+
 
         // Randomly create the vertices for the stars
         while (stars.vertices.length < this.data.count) {
