@@ -1,7 +1,7 @@
 <html>
 <head>
     <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
-    <script src="jslibs/aframe-physics-sysem.min.js"></script>
+    <script src="jslibs/aframe-physics-system.min.js"></script>
     <script src="jslibs/aframe-extras.min.js"></script>
     <script src="jslibs/aframe-particle-system-component.min.js"></script>
     <script src="https://unpkg.com/aframe-render-order-component@1.0.0/dist/aframe-render-order-component.min.js"></script>
@@ -37,7 +37,7 @@
 <!--SCENE-->
 <div id="myEmbeddedScene">
     <!--    <div id="spaceBG_CSS"/>-->
-    <a-scene vr-mode-ui="enabled: false" loading-screen="enabled: false" embedded physics="debug: false; gravity: 0;"
+    <a-scene vr-mode-ui="enabled: false" loading-screen="enabled: false" embedded physics="debug: true; gravity: 0;"
              background="transparent:true;" fog="type: linear; color: ##E5E5E5; far:90000;" renderer="sortObjects: true;">
         <!--    assets textures -->
         <a-assets>
@@ -70,6 +70,10 @@
                 player
                 >
                 <a-entity id="camera" camera position="0 5 0" look-controls>
+                    <a-entity cursor="fuse: true; fuseTimeout: 500"
+                              position="0 0.2 -1"
+                              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                              material="color: red; shader: flat"></a-entity>
                     <a-light type="point" color="#39FF14" intensity="0.75" ; distance="5" decay="2"
                              position="0 0 0"></a-light>
 <!--                    &lt;!&ndash;               crosshair&ndash;&gt;-->
@@ -82,8 +86,7 @@
 <!--                                            position="0 0.5 -2"-->
 <!--                                            geometry="primitive: ring">-->
 <!--                                    </a-entity>-->
-                    <a-cursor  position="0 0.5 -2"></a-cursor>
-                    <a-entity text="value: Planet Name;" position="0 0.8 -2"></a-entity>
+                    <a-entity text="value: Planet Name;" position="0 0 1"></a-entity>
                     <!--                hud-->
                     <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
                               material="src:#hud; opacity: 0.999">
