@@ -1,8 +1,11 @@
 // script for generating buildings / game logic etc
 // global game vars
 
-import { default as genNames } from './planetGen.js';
-import generatePlanetSurface, { default as generatePlanet } from './generatePlanetSurface.js';
+// import generatePlanetSurface, { default as generatePlanet } from './generatePlanetSurface.js';
+// import genGalaxyName, { default as genGalaxyName} from './generatePlanetSurface.js';
+
+import {genNames, genGalaxyName } from './planetGen.js';
+
 const starsNum = getRandomInt(40, 140);
 let gamestarted = false;
 let firstDamage = false;
@@ -14,11 +17,38 @@ let shipPosX; let shipPosY; let shipPosZ;
 let planetnames = [];
 let randomPlanetId;
 let landedPlanet = false;
+let speech = new SpeechSynthesisUtterance();
+speech.lang = "en";
 
 window.onload = function () {
     // const playBtn = document.getElementById("playBtn");
     const Win = document.getElementById("Win");
+    let galaxyName =  genGalaxyName();
     beginGame();
+    speech.text = 'Welcome to the'+galaxyName+'galaxy';
+    window.speechSynthesis.speak(speech);
+    // progress loading bar function to show loading progress
+    initProgressLoader();
+
+    // progress bar code
+    let i = 0;
+    function initProgressLoader() {
+        if (i == 0) {
+            i = 1;
+            const elem = document.getElementById("myBar");
+            let width = 1;
+            let id = setInterval(frame, 10);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    i = 0;
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                }
+            }
+        }
+    }
 
     // playBtn.addEventListener('click', beginGame);
 
@@ -61,18 +91,10 @@ document.addEventListener("keydown", e => {
         spaceScene.setAttribute('visible','false');
         const planetScene = document.getElementById("planetScene");
         let planetPos = planetScene.getAttribute('position');
-        let playerFPS = document.createElement('a-entity');
-        playerFPS.setAttribute('kinematic-body','')
-        playerFPS.setAttribute('wasd-controls', 'acceleration:100')
-        let playerCam = document.createElement('a-entity');
-        playerCam.setAttribute('camera','')
-        playerCam.setAttribute('look-controls','')
-        playerFPS.setAttribute('position','0 5 0')
-        playerCam.setAttribute('position','0 2 0')
-        playerFPS.appendChild(playerCam);
-        planetScene.appendChild(playerFPS);
-        planetScene.setAttribute('visible','true');
+        // let playerFPS = document.createElement('a-entity');
+
         generatePlanet();
+        planetScene.setAttribute('visible','true');
         landedPlanet = true;
     }
 });
@@ -123,10 +145,11 @@ AFRAME.registerComponent('player', {
 
             // debris? - Landing for planet
             if (e.detail.body.el.className === "debris") {
-                console.log("star collide");
-                const box = document.querySelector('a-box');
+                console.log("asetroid collide");
                 document.getElementById('damage').play();
                 health--;
+                console.log("" +
+                    "alert"+health )
             }
 
             // change to aura later but for now test planet collision
@@ -251,7 +274,7 @@ function beginGame() {
     createStars(starsNum);
     // healthLeft.innerHTML = health.toString()
     createPortals(portalNum);
-    createRandomDebris(3);
+    createRandomDebris(5);
 
     // document.getElementById('myAudio').play();
     // document.getElementById('myAudio').volume = 0.2;
@@ -289,6 +312,7 @@ function updateGameState(time) {
         if (health === 0) {
             restart();
         }
+
         if (health <= 4) {
             document.getElementById('overheat').play();
             document.getElementById('overheat').volume = 0.1;
@@ -318,31 +342,32 @@ function createRandomDebris(fieldsNum) {
     for (i = 0; i < fieldsNum; i++) {
     let asteroidContainer = document.createElement('a-entity');
 
-    let posxP = getRandomInt(-10000, 10000);
+    let posxP = getRandomInt(-10000, 21000);
     let poszP = getRandomInt(-5000, 10000);
     let posyP = getRandomInt(-1000, 21000);
+
     document.getElementById('spaceScene').appendChild(asteroidContainer);
     asteroidContainer.setAttribute('position', {x: posxP, y: posyP, z: poszP});
     let randomDebrisNum =getRandomInt(80, 200);
     let i;
-    for (i = 0; i <  randomDebrisNum ; i++) {
-        let debrisScale = getRandomInt(1, 20);
-        let debris = document.createElement('a-dodecahedron');
+        for (i = 0; i <  randomDebrisNum ; i++) {
+            let debrisScale = getRandomInt(1, 20);
+            let debris = document.createElement('a-dodecahedron');
 
-        debris.object3D.scale.set(debrisScale, debrisScale, debrisScale);
-        debris.setAttribute('debris', '');
-        // add random texture for planets - TO DO
-        debris.setAttribute('name', 'debris');
-        debris.setAttribute('cursor-listener', '');
-        debris.setAttribute('class', 'clickable');
-        debris.setAttribute('cursor-listener', '');
-        debris.setAttribute('animation-mixer');
-        debris.setAttribute('material', 'src', '#debris');
-        debris.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.5"});
-        debris.setAttribute('material', 'color', 'brown');
+            debris.object3D.scale.set(debrisScale, debrisScale, debrisScale);
+            debris.setAttribute('debris', '');
+            // add random texture for planets - TO DO
+            debris.setAttribute('name', 'debris');
+            debris.setAttribute('cursor-listener', '');
+            debris.setAttribute('class', 'debris');
+            debris.setAttribute('cursor-listener', '');
+            debris.setAttribute('animation-mixer');
+            debris.setAttribute('material', 'src', '#debris');
+            debris.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.5"});
+            debris.setAttribute('material', 'color', 'brown');
 
-        asteroidContainer.appendChild(debris);
-    }
+            asteroidContainer.appendChild(debris);
+        }
     }
 }
 
@@ -379,7 +404,7 @@ function createPlanet(star, scale, numPlanets, posx,posy,posz, planetnames) {
         planet.setAttribute('cursor-listener', '');
         planet.setAttribute('animation-mixer');
         planet.setAttribute('material', 'src', randomTexture );
-        planet.setAttribute('body', {type: 'dynamic', mass: "4", linearDamping: "0.5"});
+        planet.setAttribute('body', {type: 'dynamic', mass: "1", linearDamping: "0.5"});
         planet.setAttribute('material', 'color', color);
 
         // set positions in a plantery orbit
