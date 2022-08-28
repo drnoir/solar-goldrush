@@ -55,7 +55,7 @@ document.addEventListener("keydown", e => {
 
 
 document.addEventListener("keydown", e => {
-    if (e.code === 'Space') {
+    if (e.code === 'Space' && !landedPlanet ) {
         const ship = document.getElementById('rig');
         // ship.setAttribute('movement-controls', 'speed' +2);
         // ship.setAttribute('wasd-controls', 'acceleration'+15);
@@ -76,11 +76,31 @@ document.addEventListener("keydown", e => {
         let planetColor = planetScene.getAttribute('color');
 
         // CHECK SCALE OF PLANET AND DETERMINE SIZE OF GEN PLANET
-        returnPlanetSize
-        generatePlanet(planetColor,4);
+        generatePlanet(planetColor,10);
         planetScene.setAttribute('visible','true');
         landedPlanet = true;
     }
+    // if landed on planet init sequence back into space
+    else if (e.code === 'Space' && landedPlanet) {
+        console.log('init laung sequence off planet');
+        const planetScene = document.getElementById("planetScene");
+        planetScene.setAttribute('visible','false');
+
+        while (planetScene.hasChildNodes()) {
+            planetScene.removeChild(planetScene.firstChild);
+        }
+
+        const ship = document.getElementById('rig');
+        ship.setAttribute('enabled','true');
+        const camShip = document.getElementById("camera");
+        camShip.setAttribute('enabled','true');
+
+        // test for now - space wipe and planet gen
+        const spaceScene = document.getElementById("spaceScene");
+        spaceScene.setAttribute('visible','true');
+        landedPlanet = false;
+    }
+
 });
 
 
