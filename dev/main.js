@@ -5,7 +5,7 @@ import {generatePlanet} from './generatePlanetSurface.js';
 import {genNames, genGalaxyName } from './planetGen.js';
 import {pythagore} from "./utils.js";
 
-const starsNum = getRandomInt(40, 80);
+let starsNum = getRandomInt(40, 80);
 let gamestarted = false;
 let firstDamage = false;
 let health = 10;
@@ -70,8 +70,7 @@ document.addEventListener("keydown", e => {
         //reload new scene and positiong player inside
     }
     else if (e.code === 'KeyH' && !landedPlanet && warpMode) {
-        console.log('init hyperspeed into another galaxay - animation?');
-
+        console.log('disengage hyperspeed into another galaxay - animation?');
         //trigger sound fx
         document.getElementById('warpDisengage').playbackRate = 0.5;
         document.getElementById('warpDisengage').play();
@@ -80,9 +79,8 @@ document.addEventListener("keydown", e => {
         const warpFX = document.getElementById('warpFX');
         warpFX.setAttribute('visible', false);
         // repopulate
-        // clearScene();
-        // play hyperspace fx
-        //reload new scene and positiong player inside
+        //generate new solar system post warp
+        newScene();
         warpMode = false;
     }
 
@@ -100,7 +98,7 @@ document.addEventListener("keydown", e => {
         camShip.setAttribute('enabled','false');
 
         // test for now - space wipe and planet gen
-        const spaceScene = document.getElementById("spaceScene");
+        const spaceScene = document.getElementById("solarSystems");
         spaceScene.setAttribute('visible','false');
         const planetScene = document.getElementById("planetScene");
         let planetPos = planetScene.getAttribute('position');
@@ -127,7 +125,7 @@ document.addEventListener("keydown", e => {
         camShip.setAttribute('enabled','true');
 
         // test for now - space wipe and planet gen
-        const spaceScene = document.getElementById("spaceScene");
+        const spaceScene = document.getElementById("solarSystems");
         spaceScene.setAttribute('visible','true');
         landedPlanet = false;
     }
@@ -178,13 +176,13 @@ AFRAME.registerComponent('player', {
                 decrementScore();
             }
 
-            // debris? - Landing for planet
-            if (e.detail.body.el.className === "debris") {
-                console.log("asteroid collide");
-                document.getElementById('damage').play();
-                health--;
-                console.log("health")
-            }
+            // debris? - Landing for planet - COMMENT BACK IN CURRENTLY BUG WITH COLLISIONS DEBUG
+            // if (e.detail.body.el.className === "debris") {
+            //     console.log("asteroid collide");
+            //     document.getElementById('damage').play();
+            //     health--;
+            //     console.log("health")
+            // }
             // change to MANA
             if (e.detail.body.el.className === "mana") {
                 console.log("planet Aura");
@@ -358,14 +356,27 @@ function beginGame() {
 
 function clearScene() {
     // destroy spaceScene Entity and all child nodes?
+    const spaceScene = document.getElementById("solarSystems")
+    spaceScene.parentNode.removeChild(spaceScene);
+    const asteroidScene = document.getElementById("asteroidSystems")
+    asteroidScene.parentNode.removeChild(asteroidScene);
+}
 
-    // let solarSystems = document.querySelector(".solarSystem")
-    //
-    // solarSystems.parentNode.removeChild(solarSystems);
-     const solarSystems = document.querySelector('.solarSystem').object3D;
-    solarSystems.destroy();
-    // repopulate after delay?
-    // beginGame()
+function newScene() {
+    const portalNum = 2;
+    starsNum = getRandomInt(40, 80);
+    createStars(starsNum);
+    // healthLeft.innerHTML = health.toString()
+    createPortals(portalNum);
+    createRandomDebris(2);
+    let galaxyName =  genGalaxyName();
+    welcome();
+    function welcome()
+    {
+        speech.text = 'Welcome to the'+galaxyName+'solar system';
+        window.speechSynthesis.speak(speech);
+    }
+    console.log("newSolarSystem Genearted post warp");
 }
 
 function restart() {
@@ -429,8 +440,17 @@ function createRandomDebris(fieldsNum) {
     let posxP = getRandomInt(-10000, 21000);
     let poszP = getRandomInt(-5000, 10000);
     let posyP = getRandomInt(-1000, 21000);
-
-    document.getElementById('spaceScene').appendChild(asteroidContainer);
+    const asteroidSystemEnt = document.getElementById('asteroidSystems');
+    if ( asteroidSystemEnt) {
+            document.getElementById('asteroidSystems').appendChild(asteroidContainer);
+    }
+    else{
+            let asteroidSystems = document.createElement('a-entity');
+            asteroidSystems.setAttribute('id', 'asteroidSystems');
+            asteroidSystems.setAttribute('visible', true);
+            asteroidSystems.appendChild(asteroidContainer);
+        }
+    // document.getElementById('asteroidSystems').appendChild(asteroidContainer);
     asteroidContainer.setAttribute('position', {x: posxP, y: posyP, z: poszP});
     let randomDebrisNum =getRandomInt(80, 200);
     let i;
@@ -533,7 +553,7 @@ function createPortals(portalsNum) {
         portal.setAttribute('name', 'portal');
         portal.setAttribute('class', 'portal');
         portal.setAttribute('material', 'src', '#wormholeBG_v');
-        document.getElementById('spaceScene').appendChild(portal);
+        document.getElementById('solarSystems').appendChild(portal);
     }
 }
 
@@ -578,8 +598,18 @@ function createStars(amount) {
         // glowSphere.appendChild(glow);
         // glowSphere.object3D.scale.set(1, 1, 1);
         // star.appendChild(glowSphere);
-        document.getElementById('spaceScene').appendChild(solarSystem);
-        document.getElementById('spaceScene').appendChild(star);
+        const solarSystemEnt = document.getElementById('solarSystems');
+        if (solarSystemEnt) {
+            document.getElementById('solarSystems').appendChild(solarSystem);
+            document.getElementById('solarSystems').appendChild(star);
+        }
+        else{
+                let solarSystems = document.createElement('a-entity');
+                 solarSystems.setAttribute('id', 'solarSystems');
+                 solarSystems.setAttribute('visible', true);
+                solarSystems.appendChild(solarSystem);
+                solarSystems.appendChild(star);
+        }
         // star.setAttribute('body', {type: 'dynamic', mass: "140", linearDamping: "0.2"});
        star.setAttribute('body', {type: 'statix',  shape: 'sphere', mass: 1200});
 
