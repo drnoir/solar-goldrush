@@ -10,8 +10,10 @@
     <script src="2.0/js libs/aframe-mobile-controls-master/aframe-mobile-controls-master/components/twoway-motion/twoway-motion.js"></script>
     <!--  random enviroment scripts-->
     <script src="jslibs/aframe-enviroment-component.min.js"></script>
+    <!--    spacegen scripts-->
     <script src="planetGen.js" type="module"></script>
     <script src="main.js" type="module"></script>
+    <script src="jslibs/warpspeed/warpspeed.js" ></script>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -25,7 +27,9 @@
 <audio id="collide" src="sound/collision.wav"></audio>
 <audio id="overheat" src="sound/overheating.wav"></audio>
 <audio id="warp" src="sound/warp-drive.wav"></audio>
+<audio id="warpDrive" src="sound/WarpDrive_02.mp3"></audio>
 <audio id="warpEngage" src="sound/WarpDrive_01.mp3"></audio>
+<audio id="warpDisengage" src="sound/WarpDrive_00.mp3"></audio>
 <audio id="background" src="sound/background-beep.mp3"></audio>
 <audio id="scan" src="sound/scan.mp3"></audio>
 <!--UI-->
@@ -37,7 +41,8 @@
 <!--SCENE-->
 <div id="myEmbeddedScene">
     <!--    <div id="spaceBG_CSS"/>-->
-    <a-scene vr-mode-ui="enabled: false" loading-screen="dotsColor: red; backgroundColor: black"embedded physics="debug: true; gravity: 0;"
+    <a-scene vr-mode-ui="enabled: false" loading-screen="dotsColor: red; backgroundColor: black" embedded
+             physics="debug: true; gravity: 0;"
              background="transparent:true;" fog="type: linear; color: ##E5E5E5; far:100000;"
              renderer="sortObjects: true;">
         <!--    assets textures -->
@@ -59,11 +64,10 @@
             <img id="debris" src="textures/volcanic.png">
             <img id="hud" src="UI/hud.png">
         </a-assets>
-        <!--        <a-entity environment skyType ="color" skyColor="black"></a-entity>-->
         <!-- Dim ambient lighting. -->
         <a-light type="ambient" color="white" intensity="0.9"></a-light>
         <!--    <a-light type="point" color="#39FF14" position="0 500 0" decay="1" angle="90"></a-light>-->
-        <a-entity id="spaceScene" visible="true">
+        <a-entity id="spaceScene" visible="true" >
             <a-entity star-system="radius:15000" depth="15000"></a-entity>
             <!--    camera -->
             <a-entity id="rig" movement-controls="fly: true; speed: 10"
@@ -87,8 +91,11 @@
                                   position="0 0 -1"
                                   color="red" radius="1.2" material="opacity: 0.5"
                                   animation="property: components.material.material.color;type: color;to: red;dur: 500;dir: alternate;loop: true"></a-entity>
+<!--                        warp speed effect-->
+                        <a-box id ="warpFX" warpspeed  position="0 0 -0.4"  depth="0.5" height="2" width="6" visible="false"></a-box>
                     </a-entity>
                 </a-entity>
+
             </a-entity>
         </a-entity>
         <!--environment-->

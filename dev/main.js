@@ -16,6 +16,7 @@ let shipPosX; let shipPosY; let shipPosZ;
 let planetnames = [];
 let randomPlanetId;
 let landedPlanet = false;
+let warpMode = false;
 let speech = new SpeechSynthesisUtterance();
 speech.lang = "en";
 
@@ -32,10 +33,7 @@ window.onload = async function () {
         window.speechSynthesis.speak(speech);
     }
     // progress loading bar function to show loading progress
-
-
     // playBtn.addEventListener('click', beginGame);
-
     // LOAD GAME IN BG? PRELOADER?
 };
 
@@ -45,8 +43,8 @@ document.addEventListener("keydown", e => {
     // 87 - w
     if (key === 'W' && !landedPlanet ) {
         const ship = document.getElementById('rig');
-        ship.setAttribute('movement-controls', 'speed' + 0.5);
-        ship.setAttribute('wasd-controls', 'acceleration' + 1);
+        // ship.setAttribute('movement-controls', 'speed' + 0.5);
+        // ship.setAttribute('wasd-controls', 'acceleration' + 1);
         // add event listener for w press for accel
         document.getElementById('accel').play();
         document.getElementById('accel').volume = 0.3;
@@ -55,6 +53,39 @@ document.addEventListener("keydown", e => {
 
 
 document.addEventListener("keydown", e => {
+    // if not on a planet init hyperspace on press of h
+    if (e.code === 'KeyH' && !landedPlanet && !warpMode) {
+        warpMode = true;
+        console.log('init hyperspeed into another galaxay - animation?');
+        //trigger sound fx
+        document.getElementById('warpDrive').playbackRate = 0.5;
+        document.getElementById('warpDrive').play();
+        document.getElementById('warpDrive').volume = 1;
+        // trigger warpspeed lib - EXPERIMENTAL
+        const warpFX = document.getElementById('warpFX');
+        warpFX.setAttribute('visible', true);
+        // clear scene
+        clearScene();
+        // play hyperspace fx
+        //reload new scene and positiong player inside
+    }
+    else if (e.code === 'KeyH' && !landedPlanet && warpMode) {
+        console.log('init hyperspeed into another galaxay - animation?');
+
+        //trigger sound fx
+        document.getElementById('warpDisengage').playbackRate = 0.5;
+        document.getElementById('warpDisengage').play();
+        document.getElementById('warpDisengage').volume = 1;
+        // trigger warpspeed lib - EXPERIMENTAL
+        const warpFX = document.getElementById('warpFX');
+        warpFX.setAttribute('visible', false);
+        // repopulate
+        // clearScene();
+        // play hyperspace fx
+        //reload new scene and positiong player inside
+        warpMode = false;
+    }
+
     if (e.code === 'Space' && !landedPlanet ) {
         const ship = document.getElementById('rig');
         // ship.setAttribute('movement-controls', 'speed' +2);
@@ -154,8 +185,6 @@ AFRAME.registerComponent('player', {
                 health--;
                 console.log("health")
             }
-
-
             // change to MANA
             if (e.detail.body.el.className === "mana") {
                 console.log("planet Aura");
@@ -163,7 +192,6 @@ AFRAME.registerComponent('player', {
                 document.getElementById('collect').play();
                 spaceMana++;
             }
-
             // change to aura later but for now test planet collision
             if (e.detail.body.el.id === "planet") {
                 console.log("planet Aura");
@@ -178,7 +206,6 @@ AFRAME.registerComponent('player', {
     }
 
 })
-
 
 AFRAME.registerComponent('playerCam', {
     init: function () {
@@ -228,7 +255,7 @@ AFRAME.registerComponent('debris', {
         let playerPos = this.player.object3D.position;
         let debrisPos = this.el.object3D.position;
         let distance = playerPos.distanceTo(debrisPos )
-        if (distance < 10)
+        if (distance <= 2)
         {
             console.log("ateroid Field is nearby" + this.el.id);
             speech.text = "Caution - you are approaching an asteroid field";
@@ -298,8 +325,6 @@ AFRAME.registerComponent('planet', {
     }
 });
 
-
-
 function beginGame() {
     let time = 0;
     gamestarted = true;
@@ -329,6 +354,18 @@ function beginGame() {
     // playBtn.style.visibility = "hidden";
     updateGameState(time);
 
+}
+
+function clearScene() {
+    // destroy spaceScene Entity and all child nodes?
+
+    // let solarSystems = document.querySelector(".solarSystem")
+    //
+    // solarSystems.parentNode.removeChild(solarSystems);
+     const solarSystems = document.querySelector('.solarSystem').object3D;
+    solarSystems.destroy();
+    // repopulate after delay?
+    // beginGame()
 }
 
 function restart() {
@@ -524,6 +561,7 @@ function createStars(amount) {
         star.setAttribute('rotation', "0 0 0");
         solarSystem.setAttribute('position', {x: posx, y: posy, z: posz});
         solarSystem.setAttribute('id', 'solarSystem'+i);
+        solarSystem.setAttribute('class', 'solarSystem');
         // solarSystem.object3D.scale.set(scale*3, scale*3, scale*3);
 
 
@@ -690,4 +728,7 @@ function returnPlanetSize(planetScale) {
         default:
 
     }};
+
+
+
 
