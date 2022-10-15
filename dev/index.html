@@ -42,7 +42,7 @@
 <div id="myEmbeddedScene">
     <!--    <div id="spaceBG_CSS"/>-->
     <a-scene vr-mode-ui="enabled: false" loading-screen="dotsColor: red; backgroundColor: black" embedded
-             physics="debug: true; gravity: 0;"
+             physics="debug: false; gravity: 0;"
              background="transparent:true;" fog="type: linear; color: ##E5E5E5; far:100000;"
              renderer="sortObjects: true; " stats>
         <!--    assets textures -->
@@ -68,7 +68,7 @@
         <a-light type="ambient" color="white" intensity="0.9"></a-light>
         <!--    <a-light type="point" color="#39FF14" position="0 500 0" decay="1" angle="90"></a-light>-->
         <a-entity id="spaceScene" visible="true">
-            <a-entity star-system="radius:15000" depth="15000"></a-entity>
+            <a-entity star-system="radius:11000" depth="12000"></a-entity>
             <!--    camera -->
             <a-entity id="rig" movement-controls="fly: true; speed: 10"
                       kinematic-body
@@ -78,8 +78,8 @@
                               position="0 0.2 -1"
                               geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
                               material="color: red; shader: flat"></a-entity>
-                    <a-light type="point" color="#39FF14" intensity="0.75" ; distance="5" decay="2"
-                             position="0 0 0"></a-light>
+                    <a-light type="point" color="red" intensity="0.15" ; distance="5" decay="2"
+                             position="0 -0.4 0"></a-light>
                     <!--                hud-->
                     <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
                               material="src:#hud; opacity: 0.999">
@@ -93,8 +93,16 @@
 
                         </a-entity>
                         <!--                        warp speed effect-->
-                        <a-box id="warpFX" warpspeed position="0 0 -0.4" depth="0.5" height="2" width="6"
-                               visible="false"></a-box>
+                    <a-entity id ="warpFXContainer"
+                        animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 3000;"
+                        animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 1000;"
+                               visible="false"
+                    >
+                        <a-box
+                               id="warpFX" warpspeed="backgroundColor:#000000; width:1080; height:980; density:10; speed:25; warpEffectLength:10;starColor:#145DA0;" position="0 0 -0.2" depth="0.3" height="2" width="6"
+                               >
+                        </a-box>
+                    </a-entity>
                     </a-entity>
 
                 </a-entity>

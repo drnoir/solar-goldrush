@@ -62,8 +62,10 @@ document.addEventListener("keydown", e => {
         document.getElementById('warpDrive').play();
         document.getElementById('warpDrive').volume = 1;
         // trigger warpspeed lib - EXPERIMENTAL
+        const warpFXContainer = document.getElementById('warpFXContainer');
         const warpFX = document.getElementById('warpFX');
-        warpFX.setAttribute('visible', true);
+        warpFXContainer.setAttribute('visible', true);
+        warpFXContainer.emit('fadein');
         // clear scene
         clearScene();
         // play hyperspace fx
@@ -344,7 +346,7 @@ function beginGame() {
     createStars(starsNum);
     // healthLeft.innerHTML = health.toString()
     createPortals(portalNum);
-    createRandomDebris(2);
+    createRandomDebris(5);
 
     // document.getElementById('myAudio').play();
     // document.getElementById('myAudio').volume = 0.2;
@@ -368,7 +370,7 @@ function newScene() {
     createStars(starsNum);
     // healthLeft.innerHTML = health.toString()
     createPortals(portalNum);
-    createRandomDebris(2);
+    createRandomDebris(5);
     let galaxyName =  genGalaxyName();
     welcome();
     function welcome()
@@ -566,7 +568,7 @@ function createStars(amount) {
         let posx = getRandomInt(-25000, 25000);
         let posz = getRandomInt(-25000,25000);
         let posy = getRandomInt(-25000,25000);
-        let scale = getRandomInt(90, 420);
+        let scale = getRandomInt(50, 420);
         let scaleGlow = 1.5;
         star.setAttribute('position', {x: posx, y: posy, z: posz});
         star.object3D.scale.set(scale, scale, scale);
@@ -758,6 +760,7 @@ function returnPlanetSize(planetScale) {
         default:
 
     }};
+
 
 
 
