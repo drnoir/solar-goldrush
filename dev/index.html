@@ -1,0 +1,123 @@
+<html>
+<head>
+    <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+    <script src="jslibs/aframe-physics-system.min.js"></script>
+    <script src="jslibs/aframe-extras.min.js"></script>
+    <script src="jslibs/aframe-particle-system-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-render-order-component@1.0.0/dist/aframe-render-order-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-spritesheet-component/dist/aframe-spritesheet-component.min.js"></script>
+    <script src="2.0/js libs/aframe-mobile-controls-master/aframe-mobile-controls-master/components/tilt-turn/tilt-turn.js"></script>
+    <script src="2.0/js libs/aframe-mobile-controls-master/aframe-mobile-controls-master/components/twoway-motion/twoway-motion.js"></script>
+    <!--  random enviroment scripts-->
+    <script src="jslibs/aframe-enviroment-component.min.js"></script>
+    <!--    spacegen scripts-->
+    <script src="planetGen.js" type="module"></script>
+    <script src="main.js" type="module"></script>
+    <script src="jslibs/warpspeed/warpspeed.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<!--AUDIO-->
+<!--// need to change to OGGG or MPR-->
+<audio id="myAudio" src="sound/music.wav"></audio>
+<audio id="ambience" src="sound/ambience.wav"></audio>
+<audio id="accel" src="sound/WarpDrive_02.mp3"></audio>
+<audio id="pickup" src="sound/pickup.wav"></audio>
+<audio id="damage" src="sound/damage.wav"></audio>
+<audio id="collide" src="sound/collision.wav"></audio>
+<audio id="overheat" src="sound/overheating.wav"></audio>
+<audio id="warp" src="sound/warp-drive.wav"></audio>
+<audio id="warpDrive" src="sound/WarpDrive_02.mp3"></audio>
+<audio id="warpEngage" src="sound/WarpDrive_01.mp3"></audio>
+<audio id="warpDisengage" src="sound/WarpDrive_00.mp3"></audio>
+<audio id="background" src="sound/background-beep.mp3"></audio>
+<audio id="scan" src="sound/scan.mp3"></audio>
+<!--UI-->
+<!--<div id="playBtn">Start</div>-->
+<div id="Win">
+    <h2>YOU WON</h2>
+    <button id="restart">Restart</button>
+</div>
+<!--SCENE-->
+<div id="myEmbeddedScene">
+    <!--    <div id="spaceBG_CSS"/>-->
+    <a-scene vr-mode-ui="enabled: false" loading-screen="dotsColor: red; backgroundColor: black" embedded
+             physics="debug: false; gravity: 0;"
+             background="transparent:true;" fog="type: linear; color: ##E5E5E5; far:100000;"
+             renderer="sortObjects: true; " stats>
+        <!--    assets textures -->
+        <a-assets>
+            <img id="fac" src="fac.jpg">
+            <video id="wormholeBG_v" autoplay loop="true" src="spaceBG.mp4"></video>
+            <img id="energy" src="energy.jpg">
+            <img id="energyneg" src="energyneg.jpg">
+            <img id="spaceBG" src="spaceBG.jpg">
+            <!--            planet textures-->
+            <img id="swampPlanet" src="textures/swamp.png">
+            <img id="martianPlanet" src="textures/Martian.png">
+            <img id="glow" src="textures/glow.png">
+            <img id="gasPlanet" src="textures/Gaseous2.png">
+            <img id="icyPlanet" src="textures/Icy.png">
+            <img id="desertPlanet" src="textures/Savannah.png">
+            <img id="waterPlanet" src="textures/water.jpg">
+            <img id="TerrestrialPlanet" src="textures/Terrestrial1.png">
+            <img id="debris" src="textures/volcanic.png">
+            <img id="hud" src="UI/hud.png">
+        </a-assets>
+        <!-- Dim ambient lighting. -->
+        <a-light type="ambient" color="white" intensity="0.9"></a-light>
+        <!--    <a-light type="point" color="#39FF14" position="0 500 0" decay="1" angle="90"></a-light>-->
+        <a-entity id="spaceScene" visible="true">
+            <a-entity star-system="radius:12000" depth="12000"></a-entity>
+            <!--    camera -->
+            <a-entity id="rig" movement-controls="fly: true; speed: 25"
+                      kinematic-body
+                      player>
+                <a-entity id="camera" camera position="0 5 0" look-controls>
+                    <a-entity cursor="fuse: true; fuseTimeout: 500"
+                              position="0 0.2 -1"
+                              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                              material="color: red; shader: flat"></a-entity>
+                    <a-light type="point" color="red" intensity="0.15" ; distance="5" decay="2"
+                             position="0 -0.4 0"></a-light>
+                    <!--                hud-->
+                    <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
+                              material="src:#hud; opacity: 0.999"
+                    >
+                        <a-entity text="value: Galaxy Name; color: white; width: 1.5" position="-0.2 -0.3 0"></a-entity>
+                        <a-entity id = "galaxyNameUI" text="value:None; color: white; width: 1.5" position="-0.2 -0.4 0"></a-entity>
+                        <a-entity id = "galaxyStarsTitleUI" text="value:Stars; color: white; width: 1.5" position="-0.2 -0.5 0"></a-entity>
+                        <a-entity id = "galaxyStarsUI" text="value:None; color: white; width: 1.5" position="-0.2 -0.6 0"></a-entity>
+                        <a-entity id = "shieldUI" text="value: Shields ; color: white; width: 1.5" position="0.5 -0.3 0"></a-entity>
+                        <a-entity id = "shieldUI2" text="value: ; color: white; width: 1.5" position="0.5 -0.4 0"></a-entity>
+                        <!-- strobe when damaged-->
+                        <a-entity id="strobe" geometry="primitive: plane; height: 10; width: 10"
+                                  visible="false"
+                                  position="0 0 -1"
+                                  color="red" radius="1.2" material="opacity: 0.5"
+                                  animation="property: components.material.material.color;type: color;to: red;dur: 500;dir: alternate;loop: true">
+
+                        </a-entity>
+                        <!--                        warp speed effect-->
+                    <a-entity id ="warpFXContainer"
+                               visible="false"
+                    >
+                        <a-box id="warpFX" warpspeed="backgroundColor:#000000; width:1080; height:980; density:10; speed:25;
+                        warpEffectLength:10;starColor:#145DA0;" position="0 0 -0.2" depth="0.3" height="2" width="6">
+                        </a-box>
+                    </a-entity>
+                    </a-entity>
+
+                </a-entity>
+                <!--                        genearted solarsystems-->
+
+            </a-entity>
+            <a-entity id="solarSystems" visible="true"></a-entity>
+            <a-entity id="asteroidSystems" visible="true"></a-entity>
+        </a-entity>
+        <!--environment-->
+        <a-entity id="planetScene" visible="false"></a-entity>
+    </a-scene>
+</div>
+</body>
+</html>
