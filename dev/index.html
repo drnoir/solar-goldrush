@@ -68,9 +68,9 @@
         <a-light type="ambient" color="white" intensity="0.9"></a-light>
         <!--    <a-light type="point" color="#39FF14" position="0 500 0" decay="1" angle="90"></a-light>-->
         <a-entity id="spaceScene" visible="true">
-            <a-entity star-system="radius:11000" depth="12000"></a-entity>
+            <a-entity star-system="radius:12000" depth="12000"></a-entity>
             <!--    camera -->
-            <a-entity id="rig" movement-controls="fly: true; speed: 10"
+            <a-entity id="rig" movement-controls="fly: true; speed: 15"
                       kinematic-body
                       player>
                 <a-entity id="camera" camera position="0 5 0" look-controls>
@@ -82,8 +82,12 @@
                              position="0 -0.4 0"></a-light>
                     <!--                hud-->
                     <a-entity geometry="primitive: plane; height: 2; width: 5" position="0 0 -1"
-                              material="src:#hud; opacity: 0.999">
-                        <a-entity text="text: Hello World;"></a-entity>
+                              material="src:#hud; opacity: 0.999"
+                    >
+                        <a-entity text="value: Galaxy Name; color: white; width: 1.5" position="-0.2 -0.3 0"></a-entity>
+                        <a-entity id = "galaxyNameUI" text="value:None; color: white; width: 1.5" position="-0.2 -0.4 0"></a-entity>
+                        <a-entity id = "galaxyStarsTitleUI" text="value:Stars; color: white; width: 1.5" position="-0.2 -0.5 0"></a-entity>
+                        <a-entity id = "galaxyStarsUI" text="value:None; color: white; width: 1.5" position="-0.2 -0.6 0"></a-entity>
                         <!-- strobe when damaged-->
                         <a-entity id="strobe" geometry="primitive: plane; height: 10; width: 10"
                                   visible="false"
