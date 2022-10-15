@@ -1,6 +1,5 @@
 function generatePlanet(color, areaSize){
     let planetSectorArray = [];
-
     let playerCam = document.createElement('a-entity');
     playerCam.setAttribute('camera','')
     playerCam.setAttribute('wasd-controls', 'acceleration:100')
@@ -12,7 +11,6 @@ function generatePlanet(color, areaSize){
     playerCam.setAttribute('body', {type: 'dynamic', mass: "0.5", linearDamping: "0.5"});
     const planetScene = document.getElementById("planetScene");
     planetScene.appendChild(playerCam);
-
     let i;
     let sectorPos = 0;
     let prevSectorX = 0;
@@ -25,18 +23,14 @@ function generatePlanet(color, areaSize){
 
 function generatePlanetSector(color, id, prevSectorX, prevSectorZ){
     const startingSectorNum = 0;
-
     let newPlanetElm = document.createElement('a-entity');
     let seedVal = 10;
-
     let randomDressingArr = ['none', 'cubes', 'pyramids', 'cylinders', 'towers', 'mushrooms', 'trees', 'apparatus', 'torii'];
     let randomDressingID = getRandomInt(0,randomDressingArr.length-1);
     let randomDressing = randomDressingArr[randomDressingID];
-
     let randomGroundArr = ['none','flat', 'hills', 'canyon', 'spikes', 'noise'];
     let randomGroundID = getRandomInt(0,randomGroundArr.length-1);
     let ground =  randomGroundArr[randomGroundID];
-
     let dressingAmount = getRandomInt(1,15);
     let dressingVariance = getRandomInt(1,15);
     let yScale = getRandomInt(1,60);
@@ -46,18 +40,12 @@ function generatePlanetSector(color, id, prevSectorX, prevSectorZ){
     newPlanetElm.setAttribute('environment', 'preset:default;skyType:gradient;seed:25;ground:'+ground+';groundYScale:'+yScale+';dressing:'+randomDressing+';+dressingAmount:'+dressingAmount+';dressingScale:'+dressingVariance+';dressingColor:'+dressingCol+';groundTexture:walkernoise; groundColor:'+color);
     newPlanetElm.setAttribute('active', true);
     newPlanetElm.setAttribute('position', {x: randomX, y:1, z: 0});
-    // newPlanetElm.setAttribute('physics', "debug: true; gravity: 3;");
-    // newPlanetElm.setAttribute('body', {type: 'static', mass: "0.5"});
-
     document.getElementById('planetScene').appendChild(newPlanetElm);
     // add mana
     let randomMana= getRandomInt(5,100);
     generateMana(randomMana);
     console.log('new planet surface genearted');
 }
-
-
-
 
 function generateMana(numMana){
     const planetScene = document.getElementById("planetScene");

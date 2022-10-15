@@ -1,5 +1,4 @@
 // utility / common functions
-
 function pythagore(a, b, hypoth) {
     let result;
     let ab = [a, b];
