@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+    <script src="jslibs/aframe-particle-system-component.min.js"></script>
+    <script src ="star-system-component.js"></script>
+</head>
+
+</head>
+<body>
+<!--    <div id="spaceBG_CSS"/>-->
+<a-scene vr-mode-ui="enabled: false" loading-screen="dotsColor: red; backgroundColor: black"
+         background="black">
+    <a-entity id="camera" camera look-controls position="0 2 0"></a-entity>
+    <a-plane color="#CCC" height="200" width="200">
+        <!--    intro text that shows at start of game-->
+        <a-entity position="0 2 -1"
+                  text="width: 2;  scale:0; lineHeight: 20; letterSpacing: 5; color: white; value: New Game"
+                  animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; loop: false">
+        </a-entity>
+
+    </a-plane>
+    <!--    <a-entity position="0 2 -1"-->
+    <!--              text="width: 2; lineHeight: 50; letterSpacing: 5; color: white; value: [LINE AND LETTER SPACING] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam">-->
+    <!--    </a-entity>-->
+    <!--    <a-entity position="0 2 -1"-->
+    <!--              text="width: 2; lineHeight: 50; letterSpacing: 5; color: white; value: [LINE AND LETTER SPACING] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam">-->
+    <!--    </a-entity>-->
+
+
+    <a-sky color="#000"></a-sky>
+</a-scene>
+</body>
+</html>
