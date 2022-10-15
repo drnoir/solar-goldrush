@@ -70,5 +70,22 @@ function genNames(numPlanets) {
     return names;
 }
 
+function genGalaxyName() {
+    let randGalaxyName = '';
+    let pairs;
+    let seeds = [ getRandomInt(400,60000),getRandomInt(100,700),getRandomInt(200,60000)];
+    pairs = digrams.substring(24);
 
-export default genNames ;
+    randGalaxyName = makename(pairs, seeds);
+    seeds = tweakseed(next(seeds));
+
+    return randGalaxyName;
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export { genNames,  genGalaxyName };
